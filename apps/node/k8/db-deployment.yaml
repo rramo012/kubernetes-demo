@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: db
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: db
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          value: example
+        - name: POSTGRES_USER
+          value: postgres
+        image: postgres
+        imagePullPolicy: ""
+        name: db
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}
