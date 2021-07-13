@@ -33,7 +33,6 @@ services:
     ports:
       - 9001:8080
 
-#Volumes
 volumes:
   db:
     driver: local

@@ -1,6 +1,55 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: pv0002
+#   namespace: k8s-demo
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   capacity:
+#     storage: 2Gi
+#   hostPath:
+#     path: /data/pv0002/
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: db
+  name: db-node-app
+  namespace: k8s-demo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-initialization
+  namespace: k8s-demo
+data:
+  init-database.sh: |
+    #!/bin/bash
+        set -e
+        psql -v ON_ERROR_STOP=1 --username \"$POSTGRES_USER\" --dbname \"$POSTGRES_DB\" <<-EOSQL
+            CREATE TABLE traffic (
+                id SERIAL,
+                hostname TEXT NOT NULL,
+                created_at timestamp
+            );
+        EOSQL
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: k8s-demo
   labels:
     io.kompose.service: db
   name: db
@@ -25,6 +74,38 @@ spec:
         imagePullPolicy: ""
         name: db
         resources: {}
+        volumeMounts:
+          - name: db-initialization
+            mountPath: /docker-entrypoint-initdb.d/init-database.sh
+            subPath: init-database.sh
+          - name: db-pvc
+            mountPath: /var/lib/postgresql/data
       restartPolicy: Always
       serviceAccountName: ""
+      volumes:
+        - name: db-initialization
+          configMap:
+            name: db-initialization
+            items:
+              - key: init-database.sh
+                path: init-database.sh
+        - name: db-pvc
+          persistentVolumeClaim:
+            claimName: db-node-app
+            readOnly: false
 status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: k8s-demo
+  labels:
+    io.kompose.service: db
+spec:
+  ports:
+  - name: "db"
+    port: 5432
+  selector:
+    io.kompose.service: db
