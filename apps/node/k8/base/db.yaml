@@ -1,37 +1,7 @@
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv0002
-  namespace: k8s-demo
-spec:
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 2Gi
-  hostPath:
-    path: /data/pv0002/
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    io.kompose.service: db
-  name: db-node-app
-  namespace: k8s-demo
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
-status: {}
-
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-initialization
+  name: node-db-initialization
   namespace: k8s-demo
 data:
   init-database.sh: |
@@ -51,18 +21,18 @@ kind: Deployment
 metadata:
   namespace: k8s-demo
   labels:
-    io.kompose.service: db
-  name: db
+    selector: node-db
+  name: node-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: db
+      selector: node-db
   strategy: {}
   template:
     metadata:
       labels:
-        io.kompose.service: db
+        selector: node-db
     spec:
       containers:
       - env:
@@ -75,23 +45,23 @@ spec:
         name: db
         resources: {}
         volumeMounts:
-          - name: db-initialization
+          - name: node-db-initialization
             mountPath: /docker-entrypoint-initdb.d/init-database.sh
             subPath: init-database.sh
-          - name: db-pvc
+          - name: node-db-pvc
             mountPath: /var/lib/postgresql/data
       restartPolicy: Always
       serviceAccountName: ""
       volumes:
-        - name: db-initialization
+        - name: node-db-initialization
           configMap:
-            name: db-initialization
+            name: node-db-initialization
             items:
               - key: init-database.sh
                 path: init-database.sh
-        - name: db-pvc
+        - name: node-db-pvc
           persistentVolumeClaim:
-            claimName: db-node-app
+            claimName: node-db-app
             readOnly: false
 status: {}
 
@@ -99,13 +69,13 @@ status: {}
 apiVersion: v1
 kind: Service
 metadata:
-  name: db
+  name: node-db
   namespace: k8s-demo
   labels:
-    io.kompose.service: db
+    selector: node-db
 spec:
   ports:
-  - name: "db"
+  - name: "node-db"
     port: 5432
   selector:
-    io.kompose.service: db
+    selector: node-db

@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   namespace: k8s-demo
   labels:
-    io.kompose.service: nginx
-  name: nginx
+    selector: php-nginx
+  name: php-nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: nginx
+      selector: php-nginx
   strategy: {}
   template:
     metadata:
       labels:
-        io.kompose.service: nginx
+        selector: php-nginx
     spec:
       containers:
       - image: nginx
@@ -69,20 +69,21 @@ data:
       }
     }
 
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   namespace: k8s-demo
-#   labels:
-#     io.kompose.service: nginx
-#   name: php-nginx
-# spec:
-#   ports:
-#   - name: "nginx"
-#     port: 8900
-#     targetPort: 80
-#   selector:
-#     io.kompose.service: nginx
-# status:
-#   loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: k8s-demo
+  labels:
+    selector: php-nginx
+  name: php-nginx
+spec:
+  type: NodePort
+  ports:
+  - name: "nginx"
+    port: 8900
+    targetPort: 80
+  selector:
+    selector: php-nginx
+status:
+  loadBalancer: {}

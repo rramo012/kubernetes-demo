@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: node-app
   namespace: k8s-demo
   labels:
-    io.kompose.service: app
+    selector: node-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: app
+      selector: node-app
   template:
     metadata:
       labels:
-        io.kompose.service: app
+        selector: node-app
     spec:
       containers:
       - env:
         - name: PGDATABASE
           value: postgres
         - name: PGHOST
-          value: db
+          value: node-db
         - name: PGPORT
           value: "5432"
         - name: PGPASSWORD
@@ -28,7 +28,7 @@ spec:
         - name: PGUSER
           value: postgres
         image: ghcr.io/rramo012/node-app:latest
-        name: app
+        name: node-app
         ports:
         - containerPort: 9000
         resources: {}

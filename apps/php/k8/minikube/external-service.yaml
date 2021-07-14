@@ -3,7 +3,7 @@ kind: Service
 metadata:
   namespace: k8s-demo
   labels:
-    io.kompose.service: nginx
+    selector: php-nginx
   name: php-nginx-loadbalancer
 spec:
   type: LoadBalancer
@@ -12,6 +12,6 @@ spec:
     port: 9200
     targetPort: 80
   selector:
-    io.kompose.service: nginx
+    selector: php-nginx
 status:
   loadBalancer: {}
