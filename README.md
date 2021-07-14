@@ -1,6 +1,6 @@
 
 # Demo Apps
-This a collection of simple applications with k8 configs to explore the k8 ecosystem. The application in each language does the same thing. The app will store the hostname used for each request it fulfils. Then it will display a count of each request by hostname.
+This a collection of simple applications with deployment configs to explore the k8 ecosystem. The application in each language does the same thing. The app will store the hostname used for each request it fulfils. Then it will display a count of each request by hostname.
 
 ## Requirements
 
