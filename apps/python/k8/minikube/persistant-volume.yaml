@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-php-db
+  name: pv-python-db
   namespace: k8s-demo
 spec:
   accessModes:
@@ -11,15 +11,15 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: standard
   hostPath:
-    path: /data/pv-php-db/
+    path: /data/pv-python-db/
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    selector: php-db-app
-  name: php-db-app
+    selector: python-db-app
+  name: python-db-app
   namespace: k8s-demo
 spec:
   accessModes:
@@ -27,5 +27,5 @@ spec:
   resources:
     requests:
       storage: 100Mi
-  volumeName: pv-php-db
+  volumeName: pv-python-db
 status: {}

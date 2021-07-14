@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-db-initialization
+  namespace: k8s-demo
+data:
+  init-database.sql: |
+            CREATE TABLE IF NOT EXISTS traffic (
+                id SERIAL,
+                hostname TEXT NOT NULL,
+                created_at timestamp
+            );
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    selector: python-db
+  name: python-db
+  namespace: k8s-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      selector: python-db
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        selector: python-db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          value: example
+        - name: POSTGRES_USER
+          value: postgres
+        image: postgres:13.3
+        imagePullPolicy: ""
+        name: python-db
+        resources: {}
+        volumeMounts:
+          - name: python-db-initialization
+            mountPath: /docker-entrypoint-initdb.d/init-database.sql
+            subPath: init-database.sql
+          - name: python-db-pvc
+            mountPath: /var/lib/postgresql/data
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+        - name: python-db-initialization
+          configMap:
+            name: python-db-initialization
+            items:
+              - key: init-database.sql
+                path: init-database.sql
+        - name: python-db-pvc
+          persistentVolumeClaim:
+            claimName: python-db-app
+            readOnly: false
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-db
+  namespace: k8s-demo
+  labels:
+    selector: python-db
+spec:
+  ports:
+  - name: "python-db"
+    port: 5432
+  selector:
+    selector: python-db

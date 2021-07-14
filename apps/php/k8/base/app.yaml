@@ -17,7 +17,10 @@ spec:
         selector: php-fpm
     spec:
       containers:
-      - image: ghcr.io/rramo012/php-app:latest
+      - env:
+        - name: DB_SERVER
+          value: php-db
+        image: ghcr.io/rramo012/php-app:latest
         name: app
         ports:
         - containerPort: 9000

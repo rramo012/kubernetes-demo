@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    selector: python-app
+  namespace: k8s-demo
+  name: python-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      selector: python-app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        selector: python-app
+    spec:
+      containers:
+      - env:
+        - name: PGDATABASE
+          value: postgres
+        - name: PGHOST
+          value: python-db
+        - name: PGPASSWORD
+          value: example
+        - name: PGUSER
+          value: postgres
+        image: ghcr.io/rramo012/python-app:latest
+        imagePullPolicy: "Always"
+        name: python-app
+        ports:
+        - containerPort: 80
+        resources: {}
+        tty: true
+      restartPolicy: Always
+status: {}

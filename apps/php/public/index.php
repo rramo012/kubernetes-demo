@@ -1,6 +1,6 @@
 <?php
 
-$servername = 'php-db:3306';
+$servername = getenv('DB_SERVER');
 $username = 'root';
 $password = 'example';
 $dbname = 'database';
