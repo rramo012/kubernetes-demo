@@ -4,16 +4,12 @@ metadata:
   name: node-db-initialization
   namespace: k8s-demo
 data:
-  init-database.sh: |
-    #!/bin/bash
-        set -e
-        psql -v ON_ERROR_STOP=1 --username \"$POSTGRES_USER\" --dbname \"$POSTGRES_DB\" <<-EOSQL
-            CREATE TABLE traffic (
+  init-database.sql: |
+            CREATE TABLE IF NOT EXISTS traffic (
                 id SERIAL,
                 hostname TEXT NOT NULL,
                 created_at timestamp
             );
-        EOSQL
 
 ---
 apiVersion: apps/v1
@@ -40,14 +36,14 @@ spec:
           value: example
         - name: POSTGRES_USER
           value: postgres
-        image: postgres
+        image: postgres:13.3
         imagePullPolicy: ""
         name: db
         resources: {}
         volumeMounts:
           - name: node-db-initialization
-            mountPath: /docker-entrypoint-initdb.d/init-database.sh
-            subPath: init-database.sh
+            mountPath: /docker-entrypoint-initdb.d/init-database.sql
+            subPath: init-database.sql
           - name: node-db-pvc
             mountPath: /var/lib/postgresql/data
       restartPolicy: Always
@@ -57,8 +53,8 @@ spec:
           configMap:
             name: node-db-initialization
             items:
-              - key: init-database.sh
-                path: init-database.sh
+              - key: init-database.sql
+                path: init-database.sql
         - name: node-db-pvc
           persistentVolumeClaim:
             claimName: node-db-app
