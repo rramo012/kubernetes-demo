@@ -19,4 +19,6 @@ foreach( $queryResult as $row ) {
 	$counts[$row['hostname']] = $queryResult->fetch_row()[0];
 }
 
+$mysqli->close();
+
 echo json_encode( $counts );
