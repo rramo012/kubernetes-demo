@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  namespace: k8s-demo
+  labels:
+    io.kompose.service: php-fpm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: php-fpm
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: php-fpm
+    spec:
+      containers:
+      - image: ghcr.io/rramo012/php-app:latest
+        name: app
+        ports:
+        - containerPort: 9000
+        resources: {}
+        tty: true
+      restartPolicy: Always
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-fpm
+  namespace: k8s-demo
+  labels:
+    io.kompose.service: php-fpm
+spec:
+  ports:
+  - name: "php-fpm"
+    port: 9000
+  selector:
+    io.kompose.service: php-fpm
+status:
+  loadBalancer: {}

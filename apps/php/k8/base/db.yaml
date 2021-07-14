@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0003
+  namespace: k8s-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 100Mi
+  hostPath:
+    path: /data/pv0003/
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: db-php-app
+  name: db-php-app
+  namespace: k8s-demo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: db-php
+  name: db-php
+  namespace: k8s-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: db-php
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: db-php
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: mysql
+        - name: MYSQL_ROOT_PASSWORD
+          value: example
+        image: mysql:8
+        name: db
+        resources: {}
+        volumeMounts:
+          - name: db-php-initialization
+            mountPath: /docker-entrypoint-initdb.d/init_db.sql
+            subPath: init_db.sql
+          - name: db-php-pvc
+            mountPath: /var/lib/mysql
+      restartPolicy: Always
+      volumes:
+        - name: db-php-initialization
+          configMap:
+            name: db-php-initialization
+            items:
+              - key: init_db.sql
+                path: nit-database.sql
+        - name: db-php-pvc
+          persistentVolumeClaim:
+            claimName: db-php-app
+            readOnly: false
+status: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-php-initialization
+  namespace: k8s-demo
+data:
+  init_db.sql: |
+    create SCHEMA IF NOT EXISTS `database` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+    USE `database`;
+
+    CREATE TABLE `traffic` (
+      `id` INT NOT NULL AUTO_INCREMENT,
+      `hostname` VARCHAR(40) NOT NULL,
+      `created_at` DATETIME NOT NULL,
+    PRIMARY KEY (`id`));
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-db
+  namespace: k8s-demo
+  labels:
+    io.kompose.service: db-php
+spec:
+  ports:
+  - name: "php-db"
+    port: 3306
+  selector:
+    io.kompose.service: db-php
+status:
+  loadBalancer: {}
