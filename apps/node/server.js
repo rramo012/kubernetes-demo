@@ -4,13 +4,13 @@ const app = express();
 var os = require("os");
 
 app.get( '/', async ( req, res ) => {
+	const pool = new Pool();
 	const createTable = `CREATE TABLE IF NOT EXISTS traffic (id SERIAL,hostname TEXT NOT NULL,created_at timestamp);`;
 	await pool.query( createTable );
 
 	// Insert New page visit.
 	const insert = `INSERT INTO traffic(hostname, created_at) VALUES ( $1, now() ) RETURNING *`;
 	const values = [ os.hostname() ]
-	const pool = new Pool();
 	await pool.query( insert, values );
 
 	// Get all hostnames.
