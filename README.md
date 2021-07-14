@@ -4,13 +4,16 @@ This a collection of simple applications with k8 configs to explore the k8 ecosy
 
 ## Requirements
 
-### Minikube
+**Minikube**
+
 Before you can run deploy these applications locally you should install Minikube: https://minikube.sigs.k8s.io/docs/start and related dependencies.
 
-### kubectl
+**kubectl**
+
 Install the k8 command line tool: https://kubernetes.io/docs/tasks/tools/
 
-### Flex Metal Cloud
+**Flex Metal Cloud**
+
 To deploy on an OpenStack Cloud. Sign up for a new account and deploy a free personal cloud by visiting Flex Metal Central: https://central.inmoionhosting.com/flex-metal
 
 ## Deploying
