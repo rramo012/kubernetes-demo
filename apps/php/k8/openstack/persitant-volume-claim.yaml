@@ -4,11 +4,12 @@ metadata:
   labels:
     selector: php-db-app
   name: php-db-app
+  namespace: k8s-demo
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
-  storageClassName: csi-sc-cinderplugin
+  storageClassName: cinder-default
 status: {}

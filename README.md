@@ -33,8 +33,18 @@ Python Application
 `kubectl apply -f apps/python/k8/base/namespace.yaml && kubectl apply -f apps/python/k8/minikube && kubectl apply -f apps/python/k8/base`
 
 ### Deploying to Flex Metal Cloud
+
+PHP Application
+dd
 `kubectl apply -f apps/php/k8/base/namespace.yaml && kubectl apply -f apps/php/k8/openstack && kubectl apply -f apps/php/k8/base`
 
+Node JS Application
+
+`kubectl apply -f apps/node/k8/base/namespace.yaml && kubectl apply -f apps/node/k8/openstack && kubectl apply -f apps/node/k8/base`
+
+Python Application
+
+`kubectl apply -f apps/python/k8/base/namespace.yaml && kubectl apply -f apps/python/k8/openstack && kubectl apply -f apps/python/k8/base`
 ## Updating Application Code
 ### Forking
 The project will automatically try to create images when you make changes to the master branch. In order for this to work correctly,

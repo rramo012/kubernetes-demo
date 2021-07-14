@@ -46,6 +46,7 @@ spec:
             subPath: init-database.sql
           - name: node-db-pvc
             mountPath: /var/lib/postgresql/data
+            subPath: postgres
       restartPolicy: Always
       serviceAccountName: ""
       volumes:

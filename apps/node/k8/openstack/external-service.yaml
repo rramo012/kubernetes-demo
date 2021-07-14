@@ -1,13 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    selector: node-app
+  name: node-app
+  namespace: k8s-demo
+spec:
+  type: NodePort
+  ports:
+  - name: "nodejs-node-port"
+    port: 9000
+  selector:
+    selector: node-app
+
+---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: octavia
+  name: node-app-octavia
+  namespace: k8s-demo
   annotations:
     kubernetes.io/ingress.class: "openstack"
     octavia.ingress.kubernetes.io/internal: "false"
 spec:
-  defaultBackend:
-    service:
-      name: node-app
-      port:
-        number: 9300
+  backend:
+    serviceName: node-app
+    servicePort: 9000
