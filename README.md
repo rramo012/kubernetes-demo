@@ -35,7 +35,7 @@ Python Application
 ### Deploying to Flex Metal Cloud
 
 PHP Application
-dd
+
 `kubectl apply -f apps/php/k8/base/namespace.yaml && kubectl apply -f apps/php/k8/openstack && kubectl apply -f apps/php/k8/base`
 
 Node JS Application
