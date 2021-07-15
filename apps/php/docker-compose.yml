@@ -11,8 +11,6 @@ services:
     volumes:
        - ./:/usr/src/app
        - ./php.ini:/usr/local/etc/php/conf.d/php.ini
-    ports:
-      - 9000:9000
 
   php-nginx:
     image: nginx

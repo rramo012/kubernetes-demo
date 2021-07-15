@@ -54,3 +54,5 @@ Secondly, you'll need to update the image urls defined in the k8 folder for each
 
 ### Making Chages
 Each applications has a docker-compose file that will allow you to running containers. `docker-compose up` from the app/`language` folder and the stack will be created from your local files.
+
+While using docker-compose: PHP APP runs on port 8900. Node APP runs on port 9000. Python APP runs on port 8200.
